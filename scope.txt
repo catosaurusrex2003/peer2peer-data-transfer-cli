@@ -1,0 +1,6 @@
+
+support compression also.
+if yes then decompress on the reciever side
+
+
+in future support password for the compression
