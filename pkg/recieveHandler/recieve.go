@@ -40,7 +40,7 @@ func HandleRecieve() {
 	// Create a new libp2p Host
 	node, err := libp2p.New(
 		libp2p.Identity(priv),
-		libp2p.ListenAddrStrings("/ip4/0.0.0.0/tcp/10000"),
+		// libp2p.ListenAddrStrings("/ip4/0.0.0.0/tcp/10000"),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -56,7 +56,7 @@ func HandleRecieve() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("libp2p node address:", addrs[0])
+	fmt.Println("Your libp2p node address:", addrs[0])
 
 	// Set a stream handler on the host
 	node.SetStreamHandler("/p2p-event/1.0.0", handleStream)

@@ -4,17 +4,18 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/c-bata/go-prompt"
 	"github.com/manifoldco/promptui"
 
 	"main.go/pkg/cli"
 	"main.go/pkg/fileio"
+	"main.go/pkg/recieveHandler"
+	"main.go/pkg/sendHandler"
 )
 
 func main() {
 
-	// prevent the terminal from fucking up when go-prompt exits
-	defer cli.HandleExitCLI()
+	// PREVENT THE TERMINAL FROM FUCKIGN UP WHEN KERNEL PANICS
+	defer cli.ResetCLI()
 
 	menu := promptui.Select{
 		Label: "Select Action",
@@ -32,17 +33,12 @@ func main() {
 	switch result {
 
 	case "Send":
-		fmt.Println("Enter the file path to send (Tab for autocomplete):")
-		filePath := prompt.Input("> ", cli.Completer)
-
-		if filePath == "" {
-			_ = fmt.Errorf("file path cannot be empty")
-			return
-		}
-
-		fileio.GetFileProperties(filePath)
+		filePath := cli.GetFilePathPrompt()
+		fileio.GetAndLogFileProperties(filePath)
+		sendHandler.HandleSend()
 
 	case "Receive":
 		fmt.Println("You chose to receive.")
+		recieveHandler.HandleRecieve()
 	}
 }

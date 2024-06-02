@@ -11,6 +11,7 @@ import (
 	crypto "github.com/libp2p/go-libp2p/core/crypto"
 	peerstore "github.com/libp2p/go-libp2p/core/peer"
 	multiaddr "github.com/multiformats/go-multiaddr"
+	"main.go/pkg/cli"
 )
 
 func HandleSend() {
@@ -38,12 +39,22 @@ func HandleSend() {
 	// Print the host's Multiaddress
 	addrs, err := peerstore.AddrInfoToP2pAddrs(&peerInfo)
 	if err != nil {
-		panic(err)
+		cli.LogError("%w", err)
+		cli.ResetCLI()
 	}
-	fmt.Println("libp2p node address:", addrs[0])
+	fmt.Println("Your libp2p node address:", addrs[0])
 
-	// Define the target peer multiaddress (Replace with your target peer's multiaddress)
-	targetAddrStr := "/ip4/127.0.0.1/tcp/10000/p2p/12D3KooWEPPE5ZMZCDkS9eAYrVDXuiFief1iwZjVbvny3rm7syqE"
+	// targetAddrStr := "/ip4/127.0.0.1/tcp/10000/p2p/12D3KooWEPPE5ZMZCDkS9eAYrVDXuiFief1iwZjVbvny3rm7syqE"
+
+	fmt.Print("> Enter Recievers Address: ")
+
+	var targetAddrStr string
+	_, err2 := fmt.Scanln(&targetAddrStr)
+	if err2 != nil {
+		fmt.Println("Error reading input:", err)
+		return
+	}
+
 	targetAddr, err := multiaddr.NewMultiaddr(targetAddrStr)
 	if err != nil {
 		log.Fatal(err)

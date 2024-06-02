@@ -10,7 +10,7 @@ import (
 	"main.go/pkg/cli"
 )
 
-func GetFileProperties(filePath string) {
+func GetAndLogFileProperties(filePath string) {
 	fileInfo, err := os.Stat(filePath)
 	if err != nil {
 		log.Fatalf("Failed to get file properties: %v", err)
@@ -18,7 +18,7 @@ func GetFileProperties(filePath string) {
 
 	if fileInfo.IsDir() {
 		cli.LogError("It is a directory. You can compress it and send as a file. Right now compression is not supported in this program")
-		os.Exit(cli.HandleExitCLI())
+		os.Exit(cli.ResetCLI_Exit())
 	}
 
 	// Print the File Info.
