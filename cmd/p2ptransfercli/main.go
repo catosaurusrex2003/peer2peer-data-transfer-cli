@@ -11,7 +11,7 @@ import (
 	"github.com/c-bata/go-prompt"
 	"github.com/manifoldco/promptui"
 
-	"main.go/utils"
+	"main.go/pkg"
 )
 
 func handleExitCLI() int {
@@ -29,7 +29,7 @@ func getFileProperties(filePath string) {
 	}
 
 	if fileInfo.IsDir() {
-		utils.LogError("It is a directory. You can compress it and send as a file. Right now compression is not supported in this program")
+		pkg.LogError("It is a directory. You can compress it and send as a file. Right now compression is not supported in this program")
 		os.Exit(handleExitCLI())
 	}
 
@@ -74,7 +74,7 @@ func main() {
 
 	case "Send":
 		fmt.Println("Enter the file path to send (Tab for autocomplete):")
-		filePath := prompt.Input("> ", utils.Completer)
+		filePath := prompt.Input("> ", pkg.Completer)
 
 		if filePath == "" {
 			_ = fmt.Errorf("file path cannot be empty")

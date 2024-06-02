@@ -1,0 +1,3 @@
+1. support compression/extractions for folders
+2. support password for the compression.
+3. maybe private key and public key encryption to transfer data securely.
