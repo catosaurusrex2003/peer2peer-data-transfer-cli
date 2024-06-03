@@ -1,4 +1,4 @@
-package recieveHandler
+package peer
 
 import (
 	"crypto/rand"
@@ -51,7 +51,6 @@ func HandleRecieve() {
 		Addrs: node.Addrs(),
 	}
 
-	// Print the host's Multiaddress
 	addrs, err := peerstore.AddrInfoToP2pAddrs(&peerInfo)
 	if err != nil {
 		panic(err)

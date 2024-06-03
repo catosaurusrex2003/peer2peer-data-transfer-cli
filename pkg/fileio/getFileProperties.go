@@ -2,6 +2,7 @@ package fileio
 
 import (
 	"fmt"
+	"io/fs"
 	"log"
 	"os"
 	"text/tabwriter"
@@ -10,17 +11,22 @@ import (
 	"main.go/pkg/cli"
 )
 
-func GetAndLogFileProperties(filePath string) {
+func getFileProperties(filePath string) fs.FileInfo {
 	fileInfo, err := os.Stat(filePath)
 	if err != nil {
 		log.Fatalf("Failed to get file properties: %v", err)
+		return nil
 	}
 
 	if fileInfo.IsDir() {
 		cli.LogError("It is a directory. You can compress it and send as a file. Right now compression is not supported in this program")
 		os.Exit(cli.ResetCLI_Exit())
 	}
+	return fileInfo
+}
 
+func GetAndLogFileProperties(filePath string) {
+	fileInfo := getFileProperties(filePath)
 	// Print the File Info.
 	// NEED: colour change. make more good looking
 	fmt.Println("\n<<<<<<<File Info>>>>>>>")

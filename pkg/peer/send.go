@@ -1,4 +1,4 @@
-package sendHandler
+package peer
 
 import (
 	"context"
@@ -43,8 +43,6 @@ func HandleSend() {
 		cli.ResetCLI()
 	}
 	fmt.Println("Your libp2p node address:", addrs[0])
-
-	// targetAddrStr := "/ip4/127.0.0.1/tcp/10000/p2p/12D3KooWEPPE5ZMZCDkS9eAYrVDXuiFief1iwZjVbvny3rm7syqE"
 
 	fmt.Print("> Enter Recievers Address: ")
 

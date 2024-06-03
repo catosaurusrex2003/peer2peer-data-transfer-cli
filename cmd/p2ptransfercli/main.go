@@ -8,8 +8,7 @@ import (
 
 	"main.go/pkg/cli"
 	"main.go/pkg/fileio"
-	"main.go/pkg/recieveHandler"
-	"main.go/pkg/sendHandler"
+	"main.go/pkg/peer"
 )
 
 func main() {
@@ -35,10 +34,10 @@ func main() {
 	case "Send":
 		filePath := cli.GetFilePathPrompt()
 		fileio.GetAndLogFileProperties(filePath)
-		sendHandler.HandleSend()
+		peer.HandleSend()
 
 	case "Receive":
 		fmt.Println("You chose to receive.")
-		recieveHandler.HandleRecieve()
+		peer.HandleRecieve()
 	}
 }
