@@ -11,7 +11,7 @@ import (
 	"main.go/pkg/cli"
 )
 
-func getFileProperties(filePath string) fs.FileInfo {
+func GetFileProperties(filePath string) fs.FileInfo {
 	fileInfo, err := os.Stat(filePath)
 	if err != nil {
 		log.Fatalf("Failed to get file properties: %v", err)
@@ -26,7 +26,7 @@ func getFileProperties(filePath string) fs.FileInfo {
 }
 
 func GetAndLogFileProperties(filePath string) {
-	fileInfo := getFileProperties(filePath)
+	fileInfo := GetFileProperties(filePath)
 	// Print the File Info.
 	// NEED: colour change. make more good looking
 	fmt.Println("\n<<<<<<<File Info>>>>>>>")

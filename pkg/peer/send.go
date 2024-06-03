@@ -3,27 +3,60 @@ package peer
 import (
 	"context"
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/libp2p/go-libp2p"
 	crypto "github.com/libp2p/go-libp2p/core/crypto"
+	network "github.com/libp2p/go-libp2p/core/network"
 	peerstore "github.com/libp2p/go-libp2p/core/peer"
 	multiaddr "github.com/multiformats/go-multiaddr"
 	"main.go/pkg/cli"
+	"main.go/pkg/fileio"
 )
 
-func HandleSend() {
+func handlSendFileInfo(nodeStream network.Stream, filePath string) {
+
+	fileInfo := fileio.GetFileProperties(filePath)
+
+	fileInfoMessage := FileMetadata_MessageType{Action: "fileInfoSend", FileName: fileInfo.Name(), Size: fileInfo.Size()}
+	jsonString, err := json.Marshal(fileInfoMessage)
+	if err != nil {
+		fmt.Println("error marshalling fileInfoMessage")
+	}
+
+	cache, err := nodeStream.Write([]byte(jsonString))
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("File message Sent return int is", cache)
+}
+
+// func handleSendStream(s net.Stream) {
+// 	fmt.Println("Got a new stream!")
+
+// 	buf := make([]byte, 256)
+// 	for {
+// 		n, err := s.Read(buf)
+// 		if err == io.EOF {
+// 			break
+// 		} else if err != nil {
+// 			log.Fatal(err)
+// 		}
+
+// 		fmt.Println("Received:", string(buf[:n]))
+// 	}
+// }
+
+func HandleSend(filePath string) {
 	ctx := context.Background()
 
-	// Generate a key pair for this host
 	priv, _, err := crypto.GenerateEd25519Key(rand.Reader)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Create a new libp2p Host
 	node, err := libp2p.New(
 		libp2p.Identity(priv),
 	)
@@ -36,7 +69,6 @@ func HandleSend() {
 		Addrs: node.Addrs(),
 	}
 
-	// Print the host's Multiaddress
 	addrs, err := peerstore.AddrInfoToP2pAddrs(&peerInfo)
 	if err != nil {
 		cli.LogError("%w", err)
@@ -71,19 +103,22 @@ func HandleSend() {
 	fmt.Println("Connected to", targetAddrStr)
 
 	// Create a stream to the target peer
-	s, err := node.NewStream(ctx, peerinfo.ID, "/p2p-event/1.0.0")
+	nodeStream, err := node.NewStream(ctx, peerinfo.ID, "/p2p-event/1.0.0")
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// Send the initial file Info Message
+	handlSendFileInfo(nodeStream, filePath)
+
 	// Send events (messages) to the target peer
-	for i := 0; i < 5; i++ {
-		msg := fmt.Sprintf("Event #%d", i)
-		_, err := s.Write([]byte(msg))
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println("Sent:", msg)
-		time.Sleep(2 * time.Second)
-	}
+	// for i := 0; i < 5; i++ {
+	// 	msg := fmt.Sprintf("Event #%d", i)
+	// 	_, err := s.Write([]byte(msg))
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	fmt.Println("Sent:", msg)
+	// 	time.Sleep(2 * time.Second)
+	// }
 }

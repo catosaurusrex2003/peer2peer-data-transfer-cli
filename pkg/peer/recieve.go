@@ -12,7 +12,7 @@ import (
 	peerstore "github.com/libp2p/go-libp2p/core/peer"
 )
 
-func handleStream(s net.Stream) {
+func handleRecieveStream(s net.Stream) {
 	fmt.Println("Got a new stream!")
 
 	buf := make([]byte, 256)
@@ -58,7 +58,7 @@ func HandleRecieve() {
 	fmt.Println("Your libp2p node address:", addrs[0])
 
 	// Set a stream handler on the host
-	node.SetStreamHandler("/p2p-event/1.0.0", handleStream)
+	node.SetStreamHandler("/p2p-event/1.0.0", handleRecieveStream)
 
 	// Keep the host running
 	select {}
