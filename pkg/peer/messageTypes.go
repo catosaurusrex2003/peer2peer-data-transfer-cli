@@ -7,5 +7,6 @@ type FileMetadata_MessageType struct {
 }
 
 type MessageMetadata_MessageType struct {
-	Action string `json:"action"`
+	Action  string `json:"action"`
+	Content string `json:"content"`
 }
