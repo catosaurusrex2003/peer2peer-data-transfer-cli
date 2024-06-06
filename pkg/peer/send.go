@@ -6,9 +6,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/libp2p/go-libp2p"
 	crypto "github.com/libp2p/go-libp2p/core/crypto"
+	net "github.com/libp2p/go-libp2p/core/network"
 	network "github.com/libp2p/go-libp2p/core/network"
 	peerstore "github.com/libp2p/go-libp2p/core/peer"
 	multiaddr "github.com/multiformats/go-multiaddr"
@@ -20,7 +22,12 @@ func handlSendFileInfo(nodeStream network.Stream, filePath string) {
 
 	fileInfo := fileio.GetFileProperties(filePath)
 
-	fileInfoMessage := FileMetadata_MessageType{Action: "fileInfoSend", FileName: fileInfo.Name(), Size: fileInfo.Size()}
+	fileInfoMessage := FileMetadata_MessageType{
+		Action:       "fileInfoSend",
+		FileName:     fileInfo.Name(),
+		Size:         fileInfo.Size(),
+		IsDir:        fileInfo.IsDir(),
+		LastModified: fileInfo.ModTime().Format(time.RFC1123)}
 	jsonString, err := json.Marshal(fileInfoMessage)
 	if err != nil {
 		fmt.Println("error marshalling fileInfoMessage")
@@ -33,21 +40,38 @@ func handlSendFileInfo(nodeStream network.Stream, filePath string) {
 	fmt.Println("File message Sent return int is", cache)
 }
 
-// func handleSendStream(s net.Stream) {
-// 	fmt.Println("Got a new stream!")
+func handleStream_onSenderSide(s net.Stream) {
 
-// 	buf := make([]byte, 256)
-// 	for {
-// 		n, err := s.Read(buf)
-// 		if err == io.EOF {
-// 			break
-// 		} else if err != nil {
-// 			log.Fatal(err)
-// 		}
+	buf := make([]byte, 256)
+	n, err := s.Read(buf)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	log.Printf("Received message: %s", string(buf[:n]))
 
-// 		fmt.Println("Received:", string(buf[:n]))
-// 	}
-// }
+	var genericMap map[string]interface{}
+	if err := json.Unmarshal(buf[:n], &genericMap); err != nil {
+		cli.LogError("Error Marshalling JSON", err)
+	}
+
+	actionValue, ok := genericMap["action"]
+	// Determine type of message based on action
+	if ok {
+		if actionValue == "fileAcceptMessage" {
+			if genericMap["value"] == "accept" {
+				fmt.Println("SENDING FILE")
+			} else {
+				fmt.Println("Ah Shit i cant send the file")
+			}
+		}
+	} else {
+		// This Means that action is not present in json.
+		// most prob means the new stream is of file data
+		fmt.Println("Unknown JSON structure")
+	}
+
+}
 
 func HandleSend(filePath string) {
 	ctx := context.Background()
@@ -75,6 +99,8 @@ func HandleSend(filePath string) {
 		cli.ResetCLI()
 	}
 	fmt.Println("Your libp2p node address:", addrs[0])
+
+	node.SetStreamHandler("/p2p-event/1.0.0", handleStream_onSenderSide)
 
 	fmt.Print("> Enter Recievers Address: ")
 
@@ -110,15 +136,4 @@ func HandleSend(filePath string) {
 
 	// Send the initial file Info Message
 	handlSendFileInfo(nodeStream, filePath)
-
-	// Send events (messages) to the target peer
-	// for i := 0; i < 5; i++ {
-	// 	msg := fmt.Sprintf("Event #%d", i)
-	// 	_, err := s.Write([]byte(msg))
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	fmt.Println("Sent:", msg)
-	// 	time.Sleep(2 * time.Second)
-	// }
 }
