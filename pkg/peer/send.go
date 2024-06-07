@@ -9,9 +9,8 @@ import (
 	"time"
 
 	"github.com/libp2p/go-libp2p"
-	crypto "github.com/libp2p/go-libp2p/core/crypto"
-	net "github.com/libp2p/go-libp2p/core/network"
-	network "github.com/libp2p/go-libp2p/core/network"
+	"github.com/libp2p/go-libp2p/core/crypto"
+	"github.com/libp2p/go-libp2p/core/network"
 	peerstore "github.com/libp2p/go-libp2p/core/peer"
 	multiaddr "github.com/multiformats/go-multiaddr"
 	"main.go/pkg/cli"
@@ -40,7 +39,7 @@ func handlSendFileInfo(nodeStream network.Stream, filePath string) {
 	fmt.Println("File message Sent return int is", cache)
 }
 
-func handleStream_onSenderSide(s net.Stream) {
+func handleStream_onSenderSide(s network.Stream) {
 
 	buf := make([]byte, 256)
 	n, err := s.Read(buf)
@@ -78,15 +77,15 @@ func HandleSend(filePath string) {
 
 	priv, _, err := crypto.GenerateEd25519Key(rand.Reader)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("1", err)
 	}
-
 	node, err := libp2p.New(
 		libp2p.Identity(priv),
 	)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("2", err)
 	}
+	node.SetStreamHandler("/p2p-event/1.0.0", handleStream_onSenderSide)
 
 	peerInfo := peerstore.AddrInfo{
 		ID:    node.ID(),
@@ -100,10 +99,8 @@ func HandleSend(filePath string) {
 	}
 	fmt.Println("Your libp2p node address:", addrs[0])
 
-	node.SetStreamHandler("/p2p-event/1.0.0", handleStream_onSenderSide)
-
+	// get recievers address
 	fmt.Print("> Enter Recievers Address: ")
-
 	var targetAddrStr string
 	_, err2 := fmt.Scanln(&targetAddrStr)
 	if err2 != nil {
@@ -111,27 +108,26 @@ func HandleSend(filePath string) {
 		return
 	}
 
+	// Extract the target peer ID from the multiaddress
 	targetAddr, err := multiaddr.NewMultiaddr(targetAddrStr)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("3", err)
 	}
-
-	// Extract the target peer ID from the multiaddress
 	peerinfo, err := peerstore.AddrInfoFromP2pAddr(targetAddr)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("4", err)
 	}
 
 	// Connect to the target peer
 	if err := node.Connect(ctx, *peerinfo); err != nil {
-		log.Fatal(err)
+		log.Fatal("5", err)
 	}
-	fmt.Println("Connected to", targetAddrStr)
+	fmt.Println("Connected .....")
 
 	// Create a stream to the target peer
 	nodeStream, err := node.NewStream(ctx, peerinfo.ID, "/p2p-event/1.0.0")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("6", err)
 	}
 
 	// Send the initial file Info Message

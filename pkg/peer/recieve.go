@@ -9,17 +9,17 @@ import (
 
 	libp2p "github.com/libp2p/go-libp2p"
 	crypto "github.com/libp2p/go-libp2p/core/crypto"
-	net "github.com/libp2p/go-libp2p/core/network"
+	"github.com/libp2p/go-libp2p/core/network"
 	peerstore "github.com/libp2p/go-libp2p/core/peer"
 	"main.go/pkg/cli"
 	"main.go/pkg/fileio"
 )
 
-func handleStream_onRecieverSide(s net.Stream) {
+func handleStream_onRecieverSide(nodeStream network.Stream) {
 	fmt.Println("Got a new stream!")
 
 	buf := make([]byte, 256)
-	n, err := s.Read(buf)
+	n, err := nodeStream.Read(buf)
 	if err != nil {
 		log.Println(err)
 		return
@@ -57,19 +57,20 @@ func handleStream_onRecieverSide(s net.Stream) {
 			// fmt.Println("acceptChoice is ", strings.ToLower(acceptChoice))
 
 			if strings.ToLower(acceptChoice) == "y" {
-				fmt.Println("sending yes pls wait")
+				fmt.Println("recieving yes pls wait")
 				payload := FileAccept_MessageType{
 					Action: "fileAcceptMessage",
 					Value:  "accept",
 				}
 				payloadJsonString, err := json.Marshal(payload)
+				fmt.Println(payloadJsonString)
 				if err != nil {
 					fmt.Println("error marshalling fileInfoMessage")
 				}
 
-				cache, err := s.Write([]byte(payloadJsonString))
+				cache, err := nodeStream.Write([]byte(payloadJsonString))
 				if err != nil {
-					log.Fatal(err)
+					log.Println("error while sending yes", err)
 				}
 				fmt.Println("File message Sent return int is", cache)
 			}
@@ -109,6 +110,7 @@ func HandleRecieve() {
 	if err != nil {
 		panic(err)
 	}
+
 	fmt.Println("Your libp2p node address:", addrs[0])
 
 	// Set a stream handler on the host
