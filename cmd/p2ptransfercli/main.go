@@ -34,10 +34,10 @@ func main() {
 	case "Send":
 		filePath := cli.GetFilePathPrompt()
 		fileio.GetAndLogFileProperties(filePath)
-		peer.HandleSend(filePath)
+		peer.SenderMain(filePath)
 
 	case "Receive":
 		fmt.Println("You chose to receive.")
-		peer.HandleRecieve()
+		peer.RecieverMain()
 	}
 }
