@@ -9,6 +9,9 @@ import (
 )
 
 func Completer(d prompt.Document) []prompt.Suggest {
+	//
+	// returns a slice of suggestions for the file with most lexically similar fileName
+	//
 	path := d.TextBeforeCursor()
 	if path == "" {
 		path = "."

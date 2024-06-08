@@ -30,12 +30,10 @@ func main() {
 	// defer term.Restore(int(os.Stdin.Fd()), oldTermimnalState)
 
 	switch result {
-
 	case "Send":
 		filePath := cli.GetFilePathPrompt()
 		fileio.GetAndLogFileProperties(filePath)
 		peer.SenderMain(filePath)
-
 	case "Receive":
 		fmt.Println("You chose to receive.")
 		peer.RecieverMain()

@@ -93,18 +93,25 @@ func writeStream_Sender(rw *bufio.ReadWriter) {
 var wg_Sender sync.WaitGroup
 
 func SenderMain(filePath string) {
+	//
+	// Main function of a sender which
+	// Handles the p2p connection and coordinates the event messages
+	// uses 2 gorotines. one to read and one to write in the network.Stream
+	//
+
 	ctx := context.Background()
 	wg_Sender.Add(2)
 
+	// Assigning identity to this Host
 	priv, _, err := crypto.GenerateEd25519Key(rand.Reader)
 	if err != nil {
-		log.Fatal("1", err)
+		log.Fatal(err)
 	}
 	node, err := libp2p.New(
 		libp2p.Identity(priv),
 	)
 	if err != nil {
-		log.Fatal("2", err)
+		log.Fatal(err)
 	}
 
 	peerInfo := peerstore.AddrInfo{
@@ -117,7 +124,9 @@ func SenderMain(filePath string) {
 		cli.LogError("%w", err)
 		cli.ResetCLI()
 	}
+	fmt.Println("")
 	fmt.Println("Your libp2p node address:", addrs[0])
+	fmt.Println("")
 
 	// get recievers address
 	fmt.Print("> Enter Recievers Address: ")

@@ -8,6 +8,10 @@ import (
 )
 
 func GetFilePathPrompt() string {
+	//
+	// Prompt to choose file using autocomplete
+	//
+
 	// prevent go-prompt for fucking the terminal
 	defer ResetCLI()
 

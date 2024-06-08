@@ -136,8 +136,9 @@ func RecieverMain() {
 	if err != nil {
 		panic(err)
 	}
-
+	fmt.Println("")
 	fmt.Println("Your libp2p node address:", addrs[0])
+	fmt.Println("")
 
 	// Set a stream handler on the host
 	// node.SetStreamHandler("/p2p-event/1.0.0", handleStream_onRecieverSide)

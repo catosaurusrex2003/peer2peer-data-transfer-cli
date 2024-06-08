@@ -20,6 +20,9 @@ type FileInfoData struct {
 }
 
 func GetFileProperties(filePath string) fs.FileInfo {
+	//
+	// Gets the files property based on the path provided
+	//
 	fileInfo, err := os.Stat(filePath)
 	if err != nil {
 		log.Fatalf("Failed to get file properties: %v", err)
@@ -34,7 +37,10 @@ func GetFileProperties(filePath string) fs.FileInfo {
 }
 
 func LogFileInfo(info FileInfoData) {
-
+	//
+	// logs the fileInfoData struct in a tabular form
+	//
+	fmt.Println("")
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', tabwriter.Debug)
 	fmt.Fprintf(w, "File Name\t%s\n", info.FileName)
 	fmt.Fprintf(w, "Size\t%d bytes\n", info.FileSize)
@@ -42,9 +48,13 @@ func LogFileInfo(info FileInfoData) {
 	fmt.Fprintf(w, "Last Modified\t%s\n", info.FileLastModified)
 	fmt.Fprintf(w, "Is Directory\t%t\n", info.FileIsDir)
 	w.Flush()
+	fmt.Println("")
 }
 
 func GetAndLogFileProperties(filePath string) {
+	//
+	// gets file data and logs in tabular form
+	//
 	fileInfo := GetFileProperties(filePath)
 	fileInfoData := FileInfoData{
 		FileName:         fileInfo.Name(),
@@ -55,5 +65,4 @@ func GetAndLogFileProperties(filePath string) {
 	}
 	fmt.Println("\n<<<<<<< File Info >>>>>>>")
 	LogFileInfo(fileInfoData)
-
 }
